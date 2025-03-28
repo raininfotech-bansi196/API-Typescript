@@ -54,14 +54,8 @@ const getStateData = async (req: any, res: any) => {
             return res.status(401).json({ message: 'Unauthorized' })
         }
         const { country } = await req.body;
-        console.log({ country });
-
         const contryId = await Country.findOne({ countryName: country }, { contryId: 1 });
-        console.log({ contryId });
-
         const result = await State.find({ contryId: contryId?.contryId }, { stateName: 1 }).lean();
-        console.log({ result });
-
         return res.status(200).json({ success: true, message: "success", data: result });
     } catch (error) {
         return res.status(400).json({ success: false, message: "Internal Server Error" })

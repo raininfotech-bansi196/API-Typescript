@@ -290,8 +290,6 @@ const VerifyTwoFa = async (req: any, res: any) => {
             return res.status(400).json({ success: false, message: "User not found" })
         }
         const speakeasy = require('speakeasy');
-        // console.log(passDec(user?.twoFASecret, encryption_key('twofaKey')), "passDec(user?.twoFASecret,encryption_key('twofaKey')");
-        console.log({ secret });
         const verify = speakeasy.totp.verify({
             secret: secret ? passDec(secret, encryption_key('twofaKey')) : passDec(user?.twoFASecret, encryption_key('twofaKey')),
             encoding: "base32",

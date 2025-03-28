@@ -92,6 +92,11 @@ interface Data {
     twofaKey: string;
     otpKey: string;
     userId: string;
+    chainId: string;
+    coinId: string;
+    privateKey: string;
+    userWebWalletId: string;
+    withdrawalId: string;
 }
 export function encryption_key(type: keyof Data): string {
     const data: Data = {
@@ -101,6 +106,11 @@ export function encryption_key(type: keyof Data): string {
         twofaKey: "HNdYduYLzoHB3AT3A6NvZf9DRTq9wQXu",
         otpKey: "4AwBR5qNvejh3j5JPCKdqdChkuuHnutF",
         userId: "d8sDuFrtSIWDS23fSDEtaG6BjHfjtcmG",
+        chainId: "HgUhB^G5eRG6BjHfn90Ayh2I4AwBR2IM",
+        coinId: "d8sDuFGWDS23BjHfn90AyHeX0rZdR8qq",
+        privateKey: "fN4pU6nGLR6FyTaNwG4d6tXZirnQGkx4",
+        userWebWalletId: "8sDuyh2IMG6BjHfHnutFAyh2Ih3j5JG4",
+        withdrawalId: "HNdYdNvejhTaNwG4nutFAyhBR2IM6Bj6"
     }
     return data[type]
 }
@@ -128,4 +138,33 @@ export function generateNumeric(a = 6) {
     }
     return r;
 }
+
+export const validatePositiveNumber = (num: string, prefix: string) => {
+    const numberRegex = /^[1-9]\d*$/;
+    if (num === "0") {
+        throw prefix + " should be greater than 0"
+    } else if (!numberRegex.test(num)) {
+        throw "Invalid " + prefix
+    }
+};
+export const validateContractAddress = (address: string) => {
+    // const contractRegex = /^0x[a-fA-F0-9]{40}$/;
+    // if (!contractRegex.test(address)) {
+    //     throw "Invalid Contract Address"
+    // }
+    const patterns = {
+        ethereum: /^0x[a-fA-F0-9]{40}$/,  // Ethereum, BSC, Polygon (EVM-based)
+        bitcoin: /^(1|3|bc1)[a-zA-HJ-NP-Z0-9]{25,42}$/,  // Bitcoin (Legacy, SegWit)
+        solana: /^[1-9A-HJ-NP-Za-km-z]{32,44}$/,  // Solana (Base58)
+        tron: /^T[a-zA-Z0-9]{33}$/,  // Tron (Starts with 'T', 34 chars)
+        ripple: /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/  // XRP (Starts with 'r', 25-35 chars)
+    };
+
+    for (const [blockchain, regex] of Object.entries(patterns)) {
+        if (regex.test(address)) {
+            return { valid: true, blockchain };
+        }
+    }
+    throw "Invalid Contract Address"
+};
 

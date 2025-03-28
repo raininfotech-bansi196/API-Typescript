@@ -72,10 +72,10 @@ export async function check_user_login(req: any) {
         let token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : ''
         let userdata = decodeJwtWithPem(token);
         if (userdata.email && userdata.password) {
-            let getUserData = await User.findOne({ email: userdata.email, password: userdata.password }, { username: 1, email: 1 }).lean();
+            let getUserData = await User.findOne({ email: userdata.email, password: userdata.password }, { username: 1, email: 1,_id:1 }).lean();
             if (getUserData) {
                 return {
-                    status: true, data: { ...getUserData, userId: userdata?.userId }
+                    status: true, data: { ...getUserData, userId: getUserData?._id }
                 }
             }
         }
