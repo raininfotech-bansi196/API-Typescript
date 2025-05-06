@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
+import path from "path";
 import { check_user_login } from "../../utils/backend";
 import { encryption_key, passEnc } from "../../utils/common";
 const User = require("../../dbmodels/User");
 const Country = require('../../dbmodels/Country');
 const State = require('../../dbmodels/State');
+const fs = require('fs');
 const UserDetails = async (req: any, res: any) => {
     try {
         let user = await check_user_login(req);
@@ -62,4 +63,24 @@ const getStateData = async (req: any, res: any) => {
     }
 }
 
-module.exports = { UserDetails, getCountryData, getStateData, EditProfile }
+const getMaintenanceMode = async (req: any, res: any) => {
+    try {
+        let user = await check_user_login(req);
+        if (!user.data.userId || !user.status) {
+            return res.status(401).json({ message: 'Unauthorized' })
+        }
+        const filePath: string = path.join(process.env.MAINTENANCE_FILE_PATH || "", "maintenance-status.json");
+        let jsonObject;
+        try {
+            let getObject = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' })
+            jsonObject = getObject ? JSON.parse(getObject) : {}
+        } catch (error) {
+            return res.status(400).json({ message: `File not exist` });
+        }
+        return res.status(200).json({ maintananceStatus: jsonObject.status });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Internal Server Error" })
+    }
+}
+
+module.exports = { UserDetails, getCountryData, getStateData, EditProfile, getMaintenanceMode }

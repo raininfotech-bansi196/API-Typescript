@@ -264,7 +264,7 @@ const GenerateTwoFa = async (req: any, res: any) => {
         const qr = require('qrcode');
         let twoFaname = process.env.SITENAME + " (" + usercheck?.data?.email + ")";
         const secret = speakeasy.generateSecret({ name: twoFaname });
-        let secretKey = secret.base32
+        let secretKey = secret.base32;
         let qrcode = await qr.toDataURL(secret.otpauth_url);
         return res.status(200).json({ success: true, message: "Two Factor Authentication has been enabled successfully", secretKey, qrcode })
     } catch (error) {
